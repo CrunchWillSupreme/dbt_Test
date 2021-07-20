@@ -6,6 +6,10 @@ name: 'my_dbt_test_project'
 version: '1.0.0'
 config-version: 2
 
+
+vars:
+    current_champion: 'Lakers'
+
 # This setting configures which "profile" dbt uses for this project.
 profile: 'my-snowflake-db'
 
@@ -25,6 +29,12 @@ clean-targets:         # directories to be removed by `dbt clean`
     - "dbt_modules"
 
 
+#on-run-start: "insert into demo_db.public.dbt_audits (audit_type) values ('run_start'); commit;"
+#on-run-end: "insert into demo_db.public.dbt_audits (audit_type) values ('run_end'); commit;"
+
+on-run-start: "{{ insert_audits('run_start') }}"
+on-run-end: "{{ insert_audits('run_end') }}"
+
 # Configuring models
 # Full documentation: https://docs.getdbt.com/docs/configuring-models
 
@@ -32,6 +42,10 @@ clean-targets:         # directories to be removed by `dbt clean`
 # as tables. These settings can be overridden in the individual model files
 # using the `{{ config(...) }}` macro.
 models:
+  #pre-hook: "insert into demo_db.public.dbt_audits (audit_type) values ('model_start'); commit;"
+  #post-hook: "insert into demo_db.public.dbt_audits (audit_type) values ('model_start'); commit;"
+  pre-hook: "{{ insert_audits('model_start') }}"
+  post-hook: "{{ insert_audits('model_end') }}"
   my_dbt_test_project:
       # Applies to all files under models/staging/
       staging:

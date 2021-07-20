@@ -17,12 +17,13 @@ validation_errors as (
 
     from validation
     
-    where city = 'Los Angeles'
+    where city = 'Washington'
     and name not in ('Lakers', 'Clippers')
+ 
 
 )
 
-select count(*)
+select *
 from validation_errors
 
 {% endtest %}
